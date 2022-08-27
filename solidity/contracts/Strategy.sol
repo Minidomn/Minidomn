@@ -169,6 +169,89 @@ contract Strategy is BaseStrategy {
         }
     }
 
+function adjustPosition(uint256 _debtOutstanding) internal override {
+        if (emergencyExit) {
+            want.safeTransfer(address(vault), _debtOutstanding);
+            return;
+        }
+        ITribeChief(TRIBE_CHIEF_ADDRESS).deposit(
+            TRIBE_CHIEF_PID,
+            _debtOutstanding,
+            0
+        );
+    }
+
+    function liquidatePosition(uint256 _amountNeeded)
+        internal
+        override
+        returns (uint256 _liquidatedAmount, uint256 _loss)
+    {
+        // require(false, "YOOOOOOOOOO");
+        uint256 _wantBalance = want.balanceOf(address(this));
+
+        // if the needed amount is more than the currently available one
+        if (_amountNeeded > _wantBalance) {
+            // check how much is currently staked
+            uint256 _staked =
+                ITribeChief(TRIBE_CHIEF_ADDRESS).getTotalStakedInPool(
+                    TRIBE_CHIEF_PID,
+                    address(this)
+                );
+
+            // unstake only the strictly necessary want (withdraw all is
+            // used for convenience, then restaking everything extra)
+            uint256 _netAmountNeeded = _amountNeeded.sub(_wantBalance);
+            ITribeChief(TRIBE_CHIEF_ADDRESS).withdrawAllAndHarvest(
+                TRIBE_CHIEF_PID,
+                address(this)
+            );
+            uint256 _wantBalanceAfterUnstaking = want.balanceOf(address(this));
+            uint256 _wantToRestake =
+                _wantBalanceAfterUnstaking <= _amountNeeded
+                    ? 0
+                    : _wantBalanceAfterUnstaking.sub(_amountNeeded);
+            if (_wantToRestake > 0)
+                ITribeChief(TRIBE_CHIEF_ADDRESS).deposit(
+                    TRIBE_CHIEF_PID,
+                    _wantToRestake,
+                    0
+                );
+
+            // update the want balance after having freed up what could have been freed up
+            _wantBalance = want.balanceOf(address(this));
+            _loss = _amountNeeded > _wantBalance
+                ? _amountNeeded.sub(_wantBalance)
+                : 0;
+            _liquidatedAmount = _amountNeeded.sub(_loss);
+        } else _liquidatedAmount = _amountNeeded;
+    }
+
+    function liquidateAllPositions()
+        internal
+        override
+        returns (uint256 _amountFreed)
+    {
+        uint256 _wantBalance = want.balanceOf(address(this));
+        ITribeChief(TRIBE_CHIEF_ADDRESS).emergencyWithdraw(
+            TRIBE_CHIEF_PID,
+            address(this)
+        );
+        _amountFreed = want.balanceOf(address(this)).sub(_wantBalance);
+    }
+
+    function prepareMigration(address _newStrategy) internal override {
+        // harvesting tribe and withdrawing all want
+        ITribeChief(TRIBE_CHIEF_ADDRESS).withdrawAllAndHarvest(
+            TRIBE_CHIEF_PID,
+            address(this)
+        );
+
+        // transferring all tribe to the new strategy (if any)
+        uint256 _tribeBalance = IERC20(TRIBE_ADDRESS).balanceOf(address(this));
+        if (_tribeBalance > 0)
+            IERC20(TRIBE_ADDRESS).transfer(_newStrategy, _tribeBalance);
+    }
+    
     function protectedTokens()
         internal
         view
