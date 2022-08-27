@@ -117,6 +117,64 @@ contract FEITribeAutoCompounder is Ownable, ERC20 {
 
     }
 
+    function harvest() onlyOwner {
+        //Get Tribe reward
+        ITribalChief.harvest(poolId, address(this));
+        uint256 tribeBalance = ERC20(tribe).balanceOf(address(this));
+
+        if (tribeBalance) > 0{
+            //Take fee
+            uint256 tribeFees = Decimal.from(tribeBalance).mul(fee).div(FEE_GRANULARITY).asUint256();
+            IERC20(tribe).safeTransfer(owner(), tribeFees);
+            tribeBalance = tribeBalance - keptTribe; 
+
+            // Get FEI-TRIBE pair reserves
+            (uint256 _token0, uint256 _token1, ) = IUniswapV2Pair(feiTribeUniPair).getReserves()
+            (uint256 tribeReserve, uint256 feiReserve) = IUniswapV2Pair.token0() == tribe 
+                ? (_token0, _token1) : (_token1, _token0);
+            
+            //Prepare swap
+            uint256 amountIn = tribeBalance.div(2);
+            uint256 amountOut = UniswapV2Library.getAmountOut(amountIn, tribeReserve, feiReserve);
+            //Swap 50% of Tribe for FEI
+            feiTribeUniPair.swap(amountIn, amountOut, address(this), new bytes(0));
+
+            //add liquidity to uniswap pool 
+            uint256 feiBalance = ERC20(fei).balanceOf(address(this));
+            tribeBalance = ERC20(tribe).balanceOf(address(this));
+            if (feiBalance > 0 && tribeBalance > 0){
+                IUniswapV2Router(univ2Router).addLiquidity(
+                    fei,
+                    tribe,
+                    feiBalance,
+                    tribeBalance, 
+                    0,
+                    0,
+                    address(this),
+                    now + 60
+                );
+            }
+
+            //send dust back to owner
+            feiBalance = ERC20(fei).balanceOf(address(this));
+            tribeBalance = ERC20(tribe).balanceOf(address(this));
+            
+            if (feiBalance > 0){
+                IERC20(fei).safeTransfer(owner(), feiBalance);
+            }
+            if (tribeBalance > 0){
+                IERC20(tribe).safeTransfer(owner(), tribeBalance);
+            }
+
+            //stake in TribalChief
+            uint256 lpTokens = ERC20(feiTribePair).balanceOf(address(this));
+            if (lpTokens > 0){
+                ITribalChief(tribalChief).deposit(poolId, lpTokens, 0);
+            }
+        
+        }
+    }
+
     function updateFee(uint256 _fee) onlyOwner {
         fee = _fee;
     }
