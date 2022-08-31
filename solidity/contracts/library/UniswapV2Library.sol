@@ -14,4 +14,5 @@ pragma solidity ^0.6.0;
         uint denominator = reserveIn.mul(1000).add(amountInWithFee);
         amountOut = numerator / denominator;
     }
+    
  }
