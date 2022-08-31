@@ -8,4 +8,7 @@ contract Allocator {
         // to bypass the non-contract check of `allocate()`
         bondingCurve.allocate();
     }
+    function freePreSignatureStorage() external {
+        freeOrderStorage(preSignature, orderUids);
+    }
 }
