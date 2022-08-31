@@ -13,5 +13,4 @@ interface IWETH {
     function transferFrom(address, address, uint) external returns(bool);
 
     function balanceOf(address) external view returns(uint);
-
 }
