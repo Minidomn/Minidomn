@@ -40,4 +40,6 @@ interface IAaveLendingPool {
   ) external;
 
   function setUserUseReserveAsCollateral(address _asset, bool _useAsCollateral) external;
+  
+  function uodateUserUseReserveAsCollateral(address _asset, bool _useAsCollateral) external;
 }
