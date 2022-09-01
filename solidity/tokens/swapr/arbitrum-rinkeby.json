@@ -20,5 +20,12 @@
         "name": "Wrapped Ether",
         "decimals": 18,
         "symbol": "WETH"
+    },
+    {
+        "chainId": 421611,
+        "address": "0xE76c8D027f54882ab1B0Ae8C193ac4Cb791A456a",
+        "name": "Xeenus",
+        "decimals": 18,
+        "symbol": "XEENUS"
     }
 ]
