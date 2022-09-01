@@ -33,5 +33,12 @@
         "name": "Zeenus",
         "decimals": 0,
         "symbol": "ZEENUS"
+    },
+    {
+        "chainId": 4,
+        "address": "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+        "name": "Wrapped Ether",
+        "decimals": 18,
+        "symbol": "WETH"
     }
 ]
