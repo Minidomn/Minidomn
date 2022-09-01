@@ -34,5 +34,12 @@
         "name": "Yeenus",
         "decimals": 8,
         "symbol": "YEENUS"
+    },
+    {
+        "chainId": 421611,
+        "address": "0x5EBb2f2A13F5a23efFFEc7c04Cc9446526B38a5A",
+        "name": "Zeenus",
+        "decimals": 0,
+        "symbol": "ZEENUS"
     }
 ]
