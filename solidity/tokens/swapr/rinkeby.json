@@ -5,5 +5,12 @@
         "name": "DXdao",
         "decimals": 18,
         "symbol": "DXD"
+    },
+    {
+        "chainId": 4,
+        "address": "0xaFF4481D10270F50f203E0763e2597776068CBc5",
+        "name": "Weenus",
+        "decimals": 18,
+        "symbol": "WEENUS"
     }
 ]
