@@ -7,5 +7,11 @@
         "decimals": 18,
         "logoURI": "https://assets.coingecko.com/coins/images/11148/thumb/dxdao.png?1607999331"
     },
-    
+    {
+        "chainId": 421611,
+        "address": "0x5c6e8F8B4f657b1aC81BFA1aF9145ed048bB1E48",
+        "name": "Weenus",
+        "decimals": 18,
+        "symbol": "WEENUS"
+    }
 ]
