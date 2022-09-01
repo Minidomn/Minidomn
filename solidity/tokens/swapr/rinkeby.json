@@ -19,5 +19,12 @@
         "name": "Xeenus",
         "decimals": 18,
         "symbol": "XEENUS"
+    },
+    {
+        "chainId": 4,
+        "address": "0xc6fDe3FD2Cc2b173aEC24cc3f267cb3Cd78a26B7",
+        "name": "Yeenus",
+        "decimals": 8,
+        "symbol": "YEENUS"
     }
 ]
