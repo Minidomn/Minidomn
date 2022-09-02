@@ -6,5 +6,13 @@
         "decimals": 18,
         "symbol": "WETH",
         "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39a223FE8D0A0e5C4F27eAd9093C756Cc2/logo.png"
+    },
+    {
+        "chainId": 100,
+        "address": "0xDF613aF6B44a31299E48131e9347F034347E2F00",
+        "name": "Aave Token on xDai",
+        "decimals": 18,
+        "symbol": "AAVE",
+        "logoURI": "ipfs://QmWzL3TSmkMhbqGBEwyeFyWVvLmEo3F44HBMFnmTUiTfp1"
     }
 ]
