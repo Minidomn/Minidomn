@@ -1,0 +1,10 @@
+[
+    {
+        "chainId": 100,
+        "address": "0x6A023CCd1ff6F2005C3309768eAd9E68c978f6e1",
+        "name": "Wrapped Ether on xDai",
+        "decimals": 18,
+        "symbol": "WETH",
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39a223FE8D0A0e5C4F27eAd9093C756Cc2/logo.png"
+    }
+]
