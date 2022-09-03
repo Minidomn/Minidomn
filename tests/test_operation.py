@@ -68,6 +68,31 @@ def test_profitable_harvest(
     # assert token.balanceOf(strategy) + profit > amount
     # assert vault.pricePerShare() > before_pps
 
+    def test_change_debt(
+    chain, gov, token, vault, strategy, user, strategist, amount, RELATIVE_APPROX
+):
+    # Deposit to the vault and harvest
+    token.approve(vault.address, amount, {"from": user})
+    vault.deposit(amount, {"from": user})
+    vault.updateStrategyDebtRatio(strategy.address, 5_000, {"from": gov})
+    chain.sleep(1)
+    strategy.harvest()
+    half = int(amount / 2)
+
+    assert pytest.approx(strategy.estimatedTotalAssets(), rel=RELATIVE_APPROX) == half
+
+    vault.updateStrategyDebtRatio(strategy.address, 10_000, {"from": gov})
+    chain.sleep(1)
+    strategy.harvest()
+    assert pytest.approx(strategy.estimatedTotalAssets(), rel=RELATIVE_APPROX) == amount
+
+    # In order to pass this tests, you will need to implement prepareReturn.
+    # TODO: uncomment the following lines.
+    # vault.updateStrategyDebtRatio(strategy.address, 5_000, {"from": gov})
+    # chain.sleep(1)
+    # strategy.harvest()
+    # assert pytest.approx(strategy.estimatedTotalAssets(), rel=RELATIVE_APPROX) == half
+
 def test_triggers(
     chain, gov, vault, strategy, token, amount, user, weth, weth_amout, strategist
 ):
