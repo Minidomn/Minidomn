@@ -93,6 +93,31 @@ def test_profitable_harvest(
     # strategy.harvest()
     # assert pytest.approx(strategy.estimatedTotalAssets(), rel=RELATIVE_APPROX) == half
 
+
+def test_sweep(gov, vault, strategy, token, user, amount, weth, weth_amout):
+    # Strategy want token doesn't work
+    token.transfer(strategy, amount, {"from": user})
+    assert token.address == strategy.want()
+    assert token.balanceOf(strategy) > 0
+    with brownie.reverts("!want"):
+        strategy.sweep(token, {"from": gov})
+
+    # Vault share token doesn't work
+    with brownie.reverts("!shares"):
+        strategy.sweep(vault.address, {"from": gov})
+
+    # TODO: If you add protected tokens to the strategy.
+    # Protected token doesn't work
+    # with brownie.reverts("!protected"):
+    #     strategy.sweep(strategy.protectedToken(), {"from": gov})
+
+    before_balance = weth.balanceOf(gov)
+    weth.transfer(strategy, weth_amout, {"from": user})
+    assert weth.address != strategy.want()
+    assert weth.balanceOf(user) == 0
+    strategy.sweep(weth, {"from": gov})
+    assert weth.balanceOf(gov) == weth_amout + before_balance
+
 def test_triggers(
     chain, gov, vault, strategy, token, amount, user, weth, weth_amout, strategist
 ):
