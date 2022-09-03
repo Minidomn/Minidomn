@@ -58,3 +58,14 @@ def vault(pm, gov, rewards, guardian, management, token):
     vault.setManagement(management, {"from": gov})
     yield vault
 
+@pytest.fixture
+def strategy(strategist, keeper, vault, Strategy, gov):
+    strategy = strategist.deploy(Strategy, vault)
+    strategy.setKeeper(keeper)
+    vault.addStrategy(strategy, 10_000, 0, 2 ** 256 - 1, 1_000, {"from": gov})
+    yield strategy
+
+
+@pytest.fixture(scope="session")
+def RELATIVE_APPROX():
+    yield 1e-5
